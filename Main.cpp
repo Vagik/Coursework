@@ -50,7 +50,7 @@ void Compare(int &left, int &right, int num1, int num2) {
 }
 
 bool PixelCheck(Mat img, int x1, int y1, int x2, int y2) {
-    double k, b;				//y=kx+b
+    double k, b;
     int leftX, rightX;
     int leftY, rightY;
     int y;
