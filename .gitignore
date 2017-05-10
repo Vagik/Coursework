@@ -1,1 +1,7 @@
-*x64/
+/*
+!Main.cpp
+!VEdge.h
+!VEvent.h
+!Voronoi.h
+!VParabola.h
+!VPoint.h
