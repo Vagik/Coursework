@@ -82,7 +82,7 @@ void drawLine(Mat img, int x, int y, int angle, int length, int IterNum)
     int rd = 0;
     double alpha, alpha2;
     int len = length, len2 = length;;
-    int wid = 3;
+    int wid = 2;
     alpha = myRand(angle - 22, angle + 22);
     alpha2 = myRand(angle - 22, angle + 22);
 
@@ -92,26 +92,27 @@ void drawLine(Mat img, int x, int y, int angle, int length, int IterNum)
     x3 = x1 + len*cos(alpha2*CV_PI / 180);
     y3 = y1 + len*sin(alpha2*CV_PI / 180);
 
-    if (PixelCheck(img, x1, y1, x2, y2) && PixelCheck(img, x1, y1, x3, y3) && IterNum < 20)
+    if (PixelCheck(img, x1, y1, x2, y2) && PixelCheck(img, x1, y1, x3, y3))
     {
-        if (IterNum > 3)
-            wid = 2;
-        if (IterNum > 6)
+        if (IterNum > 2)
+            wid = 3;
+        if (IterNum > 4)
             wid = 1;
         rd = rand() % 5;
         if (rd == 0) {
             IterNum++;
-            line(img, cvPoint(x1, y1), cvPoint(x2, y2), CV_RGB(250, 250, 250), wid);
+            line(img, cvPoint(x1, y1), cvPoint(x2, y2), CV_RGB(250, 250, 0), wid);
             len++;
             drawLine(img, x2, y2, alpha, len, IterNum);
         }
         else {
             IterNum++;
-            line(img, cvPoint(x1, y1), cvPoint(x2, y2), CV_RGB(250, 250, 250), wid);
+            line(img, cvPoint(x1, y1), cvPoint(x2, y2), CV_RGB(250, 250, 0), wid);
             len++;
             drawLine(img, x2, y2, alpha, len, IterNum);
+
             len2++;
-            line(img, cvPoint(x1, y1), cvPoint(x3, y3), CV_RGB(250, 250, 250), wid);
+            line(img, cvPoint(x1, y1), cvPoint(x3, y3), CV_RGB(250, 250, 0), wid);
             drawLine(img, x3, y3, alpha2, len2, IterNum);
 
         }
@@ -123,22 +124,26 @@ void drawVoronoi(Mat src, Vertices *ver, Vertices *dir)
 {
     edg = v->GetEdges(ver, width, width);
 
-    for (Vertices::iterator i = ver->begin(); i != ver->end(); i++)
-        circle(src, cvPoint((*i)->x, (*i)->y), 2, CV_RGB(254, 254, 254), 10);
-
     for (Edges::iterator i = edg->begin(); i != edg->end(); i++)
         line(src, cvPoint((*i)->start->x, (*i)->start->y), cvPoint((*i)->end->x, (*i)->end->y), CV_RGB(255, 255, 255), 10);
 }
 
+void drawCores(Mat src, Vertices *ver, Vertices *dir)
+{
+    for (Vertices::iterator i = ver->begin(); i != ver->end(); i++)
+        circle(src, cvPoint((*i)->x, (*i)->y), 2, CV_RGB(120, 0, 254), 20);
+
+}
 int main(int argc, char** argv)
 {
+    srand(time(0));
     Mat img = Mat::zeros(1500, 1500, CV_8UC3);
     v = new Voronoi();
     ver = new Vertices();
     dir = new Vertices();
 
     int x, y;
-    int length = 33;
+    int length = 36;
     int *X = new int[12];
     int *Y = new int[12];
 
@@ -152,9 +157,10 @@ int main(int argc, char** argv)
     drawVoronoi(img, ver, dir);
 
     for (Vertices::iterator j = ver->begin(); j != ver->end(); j++)
-        for (int i = 1; i < 360; i += 45)
+        for (int i = 1; i < 360; i += 60)
             drawLine(img, (*j)->x, (*j)->y, i, length, 0);
 
+    drawCores(img, ver, dir);
     resize(img, img, cvSize(500, 500), 0, 0, 3);
     imshow("Astrocytes", img);
     waitKey(0);
